@@ -29,7 +29,8 @@ class EmployeeIdSerializer(serializers.Serializer):#use
 class UserSerializer(serializers.ModelSerializer):#use
     class Meta:
         model = User
-        fields = ['full_name','address','email','is_office_staff','place','joining_date','phone_number','password','is_librarian','is_superuser']
+        fields = ['full_name','address','email','is_office_staff','place',
+                  'joining_date','phone_number','password','is_librarian','is_superuser']
 
 
 class OfficeStaffViewSerializer(serializers.ModelSerializer):#use
@@ -104,13 +105,17 @@ class StudentDetailsCreateSerializer(serializers.ModelSerializer):
         try:
             obj = SchoolStandards.objects.get(id = standard)
         except SchoolStandards.DoesNotExist:
-            raise serializers.ValidationError("Invalid standard provided.")
-        
+            raise serializers.ValidationError({'error':'Invalid standard provided.'})
+        class_mates = StudentDetails.objects.filter(standard = obj)
+        roll_number_list = class_mates.values_list('roll_number',flat=True)
+        print(roll_number_list)
+        if value in roll_number_list:
+            raise serializers.ValidationError({'error':'Duplication of roll number occured.'})
         min_rollno = 1
         max_rollno = obj.total_students
         roll_number = int(value)
         if roll_number < min_rollno or roll_number > max_rollno:
-            return serializers.ValidationError({'error':f"Roll number should be in between {min_rollno} and {max_rollno}"})
+            raise serializers.ValidationError({'error':'Roll number out of limit'})
         return value
      
         
@@ -133,6 +138,19 @@ class StudentUpdateSerializer(serializers.ModelSerializer):
         model = StudentDetails
         fields = ['student_id','student_name','address','email','student_phone_number','profile_image','gender',
                   'roll_number','guardian_name','guardian_phone_number']
+
+
+class StandardSearchSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SchoolStandards
+        fields = ['class_name','division']
+
+
+class StudentFilterSerializer(serializers.ModelSerializer):
+    standard = StandardSearchSerializer()
+    class Meta:
+        model = StudentDetails
+        fields = ['student_id','standard','student_name','address','roll_number','guardian_name','guardian_phone_number','joining_date']
         
 
 class FeesRemarkSerializer(serializers.ModelSerializer):
@@ -144,6 +162,12 @@ class FeesRemarkSerializer(serializers.ModelSerializer):
     class Meta:
         model = FeesRemarks
         fields = ['student','fees_type','amount','payment_date','remarks']
+
+class StudentViewSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = StudentDetails
+        fields = ['student_id','student_name']
+        
 
 class FeesRemarksViewSerializer(serializers.ModelSerializer):
     student = StudentUpdateSerializer()
@@ -171,7 +195,7 @@ class LibraryHistorySerializer(serializers.ModelSerializer):
 
 
 class LibraryHistoryViewSerializer(serializers.ModelSerializer):
-    student = StudentUpdateSerializer()
+    student = StudentViewSerializer()
     class Meta:
         model = LibraryHistory
         fields = '__all__'
@@ -180,3 +204,11 @@ class LibraryHistoryUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = LibraryHistory
         fields = ['id','book_name','borrow_date','return_date','status']
+
+
+
+class FeesSearchSerializer(serializers.ModelSerializer):
+    student = StudentViewSerializer()
+    class Meta:
+        model = FeesRemarks
+        fields = ['student','fees_type','amount','payment_date','remarks']

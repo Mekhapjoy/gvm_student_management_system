@@ -128,17 +128,20 @@ class StudentDetails(models.Model):
     profile_image = models.ImageField(upload_to='student-images/', null=True, blank=True)
     gender = models.CharField(max_length=1, choices=GENDER_CHOICES)
     standard = models.ForeignKey(SchoolStandards, on_delete=models.CASCADE)
-    roll_number = models.CharField(max_length=20, unique=True, blank=True)
+    roll_number = models.CharField(max_length=20, blank=True)
     guardian_name = models.CharField(max_length=30)
     guardian_phone_number = models.CharField(max_length=15)
+    joining_date = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
         return f'{self.student_name} of class {self.standard.class_name} {self.standard.division}'
 
+
         
     def save(self, *args, **kwargs):
         if not self.student_id:
-            self.student_id = f'{self.student_name.strip().upper()}{self.standard.class_name}{self.standard.division}{self.roll_number}'
+            class_name = self.standard.class_name.replace(" ","").upper()
+            self.student_id = f'STUD{class_name}{self.standard.division}{self.roll_number}'
         super(StudentDetails, self).save(*args, **kwargs)
 
 

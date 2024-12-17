@@ -23,7 +23,9 @@ class LoginView(generics.GenericAPIView):
                 response = {
                     'refresh':str(refresh),
                     'access':str(access),
-                    'is_superuser':user.is_superuser
+                    'is_superuser':user.is_superuser,
+                    'is_office_staff':user.is_office_staff,
+                    'is_librarian':user.is_librarian
                 }
                 return Response(response,status=status.HTTP_200_OK)
             else:
@@ -31,10 +33,21 @@ class LoginView(generics.GenericAPIView):
             
         else:
             return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+        
+        
 class HasPermission(BasePermission):
     def has_permission(self, request, view):
         user = request.user
         if user.is_superuser:
             return True
         return False
+        
+class IsOfficeStaff(BasePermission):
+    def has_permission(self, request, view):
+        return request.user.groups.filter(name = 'Office_Staff').exists()
+    
+class IsLibrarian(BasePermission):
+    def has_permission(self, request, view):
+        return request.user.groups.filter(name="Librarian").exists()
+            
             

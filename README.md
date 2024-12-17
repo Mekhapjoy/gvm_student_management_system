@@ -1,9 +1,12 @@
-Student Management System with Role-Based Access Control
+                    
+                SCHOOL MANAGEMENT SYSTEM WITH ROLE-BASED ACCESS CONTROL
+
+
 
                     Project Description
                     ###################
 
-                A Student Management System developed by using django rest framework. This system allows users to perform CRUD
+                A School Management System developed using django rest framework. This system allows users to perform CRUD
         operations to manage student details across various classes and it also handle library history and fees history for each student.
         The main feature of this system is that it have a user authentication and role based access control.
         There are three main users for this system. They are "School Admin", "Office Staff" and "Librarian". Three of them have three
@@ -27,6 +30,18 @@ Student Management System with Role-Based Access Control
                     View-only access to library history and student details.
                     Cannot modify student data or fees records.
                     Limited capabilities focused on managing library resources
+
+                        
+                        Models
+                        ======
+
+        1. User
+        2. OfficeStaffProfile
+        3. LibrarianProfile
+        4. StudentDetails
+        5. SchoolStandards
+        6. FeesRemarks
+        7. LibraryHistory
 
 
 

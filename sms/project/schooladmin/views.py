@@ -9,7 +9,7 @@ from schooladmin.serializers import *
 from django.contrib.auth.models import Group,Permission
 from django.contrib.contenttypes.models import ContentType
 from rest_framework.pagination import PageNumberPagination
-from accounts.views import HasPermission
+
 # Create your views here.
 class Pagination(PageNumberPagination):
     page_size = 5

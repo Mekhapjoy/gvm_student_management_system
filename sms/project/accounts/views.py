@@ -35,12 +35,6 @@ class LoginView(generics.GenericAPIView):
             return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
         
         
-class HasPermission(BasePermission):
-    def has_permission(self, request, view):
-        user = request.user
-        if user.is_superuser:
-            return True
-        return False
         
 class IsOfficeStaff(BasePermission):
     def has_permission(self, request, view):

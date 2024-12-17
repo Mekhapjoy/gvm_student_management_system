@@ -9,7 +9,7 @@ from schooladmin.serializers import *
 from django.contrib.auth.models import Group,Permission
 from django.contrib.contenttypes.models import ContentType
 from rest_framework.pagination import PageNumberPagination
-
+from accounts.views import HasPermission
 # Create your views here.
 class Pagination(PageNumberPagination):
     page_size = 5
@@ -329,24 +329,7 @@ class StudentDetailsSearch(generics.ListAPIView):
     search_fields = ['student_id','standard__class_name']
 
 
-class CustomSortFilter(filters.OrderingFilter):
-    def get_ordering(self, request, queryset, view):
-        sort = request.data.get('sort',None)
-        if sort == 'newest':
-            return ['-joining_date']
-        elif sort == 'oldest':
-            return ['joining_date']
-        return super().get_ordering(request, queryset, view)
-    
 
-class SortStudentDetails(generics.ListAPIView):
-    authentication_classes = [JWTAuthentication]
-    permission_class = [IsAdminUser]
-    pagination_class = Pagination
-    queryset = StudentDetails.objects.select_related('standard').all()
-    serializer_class = StudentFilterSerializer
-    filter_backends = [CustomSortFilter]
-    ordering_fields = ['joining_date']
 
 class StudentDetailsView(generics.GenericAPIView):
     authentication_classes = [JWTAuthentication]
